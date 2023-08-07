@@ -14,7 +14,7 @@ namespace PokemonBackend.Controllers
         public PokemonController(ILogger<PokemonController> logger)
         {
             _logger = logger;
-            var connectionString = "mongodb+srv://sudhrravi:Santhakumari1%21@cluster0.ejaldz8.mongodb.net/?retryWrites=true&w=majority&authMechanism=SCRAM-SHA-256";
+            var connectionString = "mongodb+srv://sudhrravi:wKuyXFGQHyqRKMcY@cluster0.ejaldz8.mongodb.net/?retryWrites=true&w=majority";
             var client = new MongoClient(connectionString);
             var database = client.GetDatabase("project_vx_pokemon");
             _pokemonCollection = database.GetCollection<Pokemon>("project_vx_ff");
