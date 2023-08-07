@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "5vBt44AHI1aOpaoSWO6gljkVFxjYv2FqC6IlvijsAIQ=",
+  "Source": "PokemonBackend",
+  "BasePath": "_content/PokemonBackend",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}
