@@ -1,6 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
-using MongoDB.Driver;
+using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Text.Json;
+using Microsoft.Extensions.Logging;
 
 namespace PokemonBackend.Controllers
 {
@@ -9,23 +12,54 @@ namespace PokemonBackend.Controllers
     public class PokemonController : ControllerBase
     {
         private readonly ILogger<PokemonController> _logger;
-        private readonly IMongoCollection<Pokemon> _pokemonCollection;
+        private readonly List<Pokemon> _pokemonList;
 
         public PokemonController(ILogger<PokemonController> logger)
         {
             _logger = logger;
-            var connectionString = "mongodb+srv://sudhrravi:wKuyXFGQHyqRKMcY@cluster0.ejaldz8.mongodb.net/?retryWrites=true&w=majority";
-            var client = new MongoClient(connectionString);
-            var database = client.GetDatabase("project_vx_pokemon");
-            _pokemonCollection = database.GetCollection<Pokemon>("project_vx_ff");
+            var jsonData = System.IO.File.ReadAllText("data.json");
+            _pokemonList = JsonSerializer.Deserialize<List<Pokemon>>(jsonData);
         }
 
         [HttpGet(Name = "GetPokemon")]
-        public IEnumerable<Pokemon> Get()
+        public IActionResult Get()
         {
-            // Use the Find method to retrieve all documents in the collection
-            var pokemonList = _pokemonCollection.Find(p => true).ToList();
-            return pokemonList;
+            try
+            {
+                return Ok(_pokemonList); // Return 200 with the data
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while retrieving data.");
+                return StatusCode(500, "An error occurred while processing the request.");
+            }
         }
+
+        [HttpGet("images/{imageName}")]
+        public IActionResult GetImage(string imageName)
+        {
+            try
+            {
+                string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
+                string imagesPath = Path.Combine(baseDirectory, "images", imageName);
+
+                _logger.LogInformation($"Image Path: {imagesPath}");
+
+                if (System.IO.File.Exists(imagesPath))
+                {
+                    _logger.LogInformation($"Image Found. Returning: {imagesPath}");
+                    return PhysicalFile(imagesPath, "image/jpg");
+                }
+
+                _logger.LogInformation("Image Not Found.");
+                return NotFound();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while retrieving image.");
+                return StatusCode(500, "An error occurred while processing the request.");
+            }
+        }
+
     }
 }
